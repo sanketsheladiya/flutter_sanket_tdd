@@ -2,11 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('String Calculator Tests', () {
-    test('Returns 0 for no input', () {
+    test('Returns 0 for empty input', () {
       expect(add(""), equals(0));
     });
 
-    test('Returns the number', () {
+    test('Returns the number itself', () {
       expect(add("1"), equals(1));
     });
 
@@ -14,24 +14,27 @@ void main() {
       expect(add("1,2"), equals(3));
     });
 
-    test('Handles unknown number', () {
+    test('Handles multiple numbers', () {
       expect(add("1,2,3,4,5"), equals(15));
     });
-    test('Handles \n number', () {
+
+    test('Handles newline as a delimiter', () {
       expect(add("1\n2,3"), equals(6));
     });
+
     test('Supports custom delimiter ";"', () {
       expect(add("//;\n1;2"), equals(3));
     });
-    test('Throws exception for a single negative number', () {
+
+    test('Throws exception for single negative number', () {
       expect(() => add("1,-2,3"), throwsA(predicate((e) => e is Exception && e.toString().contains("Negatives not allowed: -2"))));
     });
+
     test('Throws exception for multiple negative numbers', () {
       expect(() => add("//;\n1;-2;-3;4"), throwsA(predicate((e) => e is Exception && e.toString().contains("Negatives not allowed: -2, -3"))));
     });
   });
 }
-
 int add(String numbers) {
   if (numbers.isEmpty) {
     return 0;
