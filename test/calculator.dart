@@ -23,6 +23,12 @@ void main() {
     test('Supports custom delimiter ";"', () {
       expect(add("//;\n1;2"), equals(3));
     });
+    test('Throws exception for a single negative number', () {
+      expect(() => add("1,-2,3"), throwsA(predicate((e) => e is Exception && e.toString().contains("Negatives not allowed: -2"))));
+    });
+    test('Throws exception for multiple negative numbers', () {
+      expect(() => add("//;\n1;-2;-3;4"), throwsA(predicate((e) => e is Exception && e.toString().contains("Negatives not allowed: -2, -3"))));
+    });
   });
 }
 
@@ -39,7 +45,20 @@ int add(String numbers) {
       }
     }
     List<String> numberList = numbers.split(RegExp('$delimiterPattern|,|\n'));
-    int sum = numberList.map((n) => int.tryParse(n) ?? 0).fold(0, (a, b) => a + b);
+    // int sum = numberList.map((n) => int.tryParse(n) ?? 0).fold(0, (a, b) => a + b);
+    List<int> negativesList = [];
+    int sum = 0;
+    for (int i = 0; i < numberList.length; i++) {
+      int passData = int.parse(numberList[i]);
+      if (passData < 0) {
+        negativesList.add(passData);
+      }
+      sum = passData + sum;
+    }
+    if (negativesList.isNotEmpty) {
+      throw Exception("Negatives not allowed: ${negativesList.join(', ')}");
+    }
+
     return sum;
   }
 }
