@@ -17,6 +17,9 @@ void main() {
     test('Handles unknown number', () {
       expect(add("1,2,3,4,5"), equals(15));
     });
+    test('Handles \n number', () {
+      expect(add("1\n2,3"), equals(6));
+    });
   });
 }
 
@@ -25,7 +28,7 @@ int add(String numbers) {
     return 0;
   } else {
     if (numbers.length > 1) {
-      List<String> numberList = numbers.split(',');
+      List<String> numberList = numbers.split(RegExp(r'[\n,]'));
       int sum = numberList.map((n) => int.parse(n)).fold(0, (a, b) => a + b);
       return sum;
     } else {
