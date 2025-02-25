@@ -20,6 +20,9 @@ void main() {
     test('Handles \n number', () {
       expect(add("1\n2,3"), equals(6));
     });
+    test('Supports custom delimiter ";"', () {
+      expect(add("//;\n1;2"), equals(3));
+    });
   });
 }
 
@@ -27,12 +30,16 @@ int add(String numbers) {
   if (numbers.isEmpty) {
     return 0;
   } else {
-    if (numbers.length > 1) {
-      List<String> numberList = numbers.split(RegExp(r'[\n,]'));
-      int sum = numberList.map((n) => int.parse(n)).fold(0, (a, b) => a + b);
-      return sum;
-    } else {
-      return int.parse(numbers);
+    String delimiterPattern = r'[,\n]';
+    if (numbers.startsWith('//')) {
+      int newlineIndex = numbers.indexOf('\n');
+      if (newlineIndex != -1) {
+        delimiterPattern = RegExp.escape(numbers.substring(2, newlineIndex));
+        numbers = numbers.substring(newlineIndex + 1);
+      }
     }
+    List<String> numberList = numbers.split(RegExp('$delimiterPattern|,|\n'));
+    int sum = numberList.map((n) => int.tryParse(n) ?? 0).fold(0, (a, b) => a + b);
+    return sum;
   }
 }
